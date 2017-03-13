@@ -54,7 +54,7 @@ props = PA.props()
 
 props.score = 500 //will trigger an update
 
-/* fileone.js will output 500 */
+/* file-one.js will output 500 */
 
 props.score = 500 //will not trigger an update, same data
 
