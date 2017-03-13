@@ -72,6 +72,7 @@ Some things to consider before, or when using __PropsAware__:
   - Limit yourself to a handful of base `PA` properties, and pass primitives for flow control.
   - There are no guarantees on delivery order or timing. it will get there though.
   - When creating object instances with `PA` properties, each instance will have its own listener. [3]
+  - Dont set `PA` properties in an `onAll` handler. [4]
 
 ### Footnotes
 
@@ -155,6 +156,63 @@ instance1.props.score = 100
 /* instance2 outputs 100 */
 /* instance3 outputs 100 */
 ```
+
+#### 4) Dont set properties in an `onAll` handler:
+
+```js
+//infinite loop
+let props = PA.props()
+PA.onAll((val, prop) => {
+  props[prop] = val //dont do it!
+  props.dontsetme = 'oops' //think of the puppies!!
+})
+```
+
+If you _really, really_ need to set a `PA` property in an `onAll` handler you can either:
+
+___Set it silently, without triggering an update___
+
+```js
+let props = PA.props()
+PA.onAll((val, prop) => {
+  PA.set(prop, val) //does not emit
+})
+```
+
+Or, you can use this workaround/hack:
+
+```js
+let props = PA.props()
+PA.onAll((val, prop) => {
+  setTimeout(() => { props[prop] = val }, 1)
+  //will run until your computer starts smoking
+})
+```
+
+But, at the end of the day, thats an infinite loop. Its not advisable.
+
+# Keep it simple
+
+Try to keep the amount of __PropsAware__ properties to a minimum. Pass strings, numbers, and booleans to handle messaging and state.
+
+Consider the following:
+
+```js
+const PA = require('@develephant/props-aware')
+let props = PA.props()
+
+//this is okay...
+props.walking = true
+props.running = false
+
+//but this is better!
+props.pace = 'walking'
+//OR
+props.pace = 'running'
+
+```
+
+> In most basic programs, you shouldnt need more than 5-6 __PropsAware__ properties.
 
 # API
 
@@ -416,72 +474,6 @@ classB.props.score = 1000
 /* ObjA will output 1000 */
 
 ```
-
-# Tips
-
-## Keep it simple
-
-Try to keep the amount of __PropsAware__ properties to a minimum, and instead pass strings, etc. to handle different messaging and state.
-
-Consider the following:
-
-```js
-const PA = require('@develephant/props-aware')
-let props = PA.props()
-
-//this is okay...
-props.walking = true
-props.running = false
-
-//but this is better!
-props.pace = 'walking'
-//OR
-props.pace = 'running'
-
-```
-
-> In most basic programs, you can usually get away with less than 5-6 __PropsAware__ properties.
-
-### Notes
-
-If you need to set a `PA` property in the properties callback, you can either set it silently, without triggering an update, or by setting a super short timeout.
-
-But, in reality this creating an infinite loop, so you _should_ have a good reason to do it.
-
-___The issue:___
-
-```js
-...
-let props = PA.props()
-PA.on('score', (val) => {
-  props.score = 300
-  /* Will repeat until stack overflow */
-})
-```
-
-___Set a property "silently":___
-
-```js
-...
-
-PA.on('score', (val) => {
-  PA.set('score', new_val)
-})
-
-```
-
-If you really, really, want to loop in the callback, you can use this trick:
-
-```js
-...
-
-let props = PA.props()
-PA.on('score', (val) => {
-  setTimeout((val) => { props.score = val }, 1)
-  /* Will loop forever, or until your computer fizzles */
-})
-```
-
 
 ^_^
 
