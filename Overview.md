@@ -1,4 +1,4 @@
-# PropsAware Overview
+# Overview
 
 __PropsAware__ (or `PA`) is a "global" property object that emits events when properties are changed.
 
@@ -38,7 +38,7 @@ props.score = 500
 
 ```
 
-## Usage Examples
+## API
 
 ## `props`
 
@@ -61,9 +61,16 @@ PA.on('score', (val, prop) => {
   console.log(val)
 })
 
-```
 
----
+## `has`
+
+Checks to see if a specific property is housed in the __PropsAware__ property table.
+
+```js
+const PA = require('@develephant/props-aware')
+
+let has_username = PA.has('username')
+```
 
 ## `del`
 
@@ -72,8 +79,6 @@ Removes a properties update listeners. This destroys __all__ update listeners fo
 ```js
 let success = PA.del('score')
 ```
-
----
 
 ## `onAll`
 
@@ -85,8 +90,6 @@ PA.onAll((prop, val) => {
 })
 ```
 
----
-
 ## `onDel`
 
 Fired when the `del` method is used in the __PropsAware__ object
@@ -96,6 +99,8 @@ PA.onDel((prop, val) => {
   console.log('del', prop, val)
 })
 ```
+
+## Usage Examples
 
 ### In Classes
 

@@ -27,7 +27,6 @@ delete a3
 
 console.log(a3)
 
-
 let b = new ClassB()
 b.greet()
 

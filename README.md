@@ -1,6 +1,6 @@
 # `PropsAware`
 
-### An event driven global properties store
+### A "living" global properties store, for NodeJS programs. Dispatch throughout your programs with ease.
 
 ## Install
 
@@ -14,31 +14,211 @@ npm i @develephant/props-aware --save
 const PropsAware = require('@develephant/props-aware')
 ```
 
-## Example
+# Overview
+
+__PropsAware__ (or `PA`) is a "global" property object that emits events when properties are changed.
+
+You can listen for these changes virutally anywhere in your program. In code it looks like this:
 
 ```js
+//file-one.js
+
+/* Pull in PropsAware as PA */
 const PA = require('@develephant/props-aware')
 
-props = PA.props()
+let props = PA.props()
 
 PA.on('score', (val) => {
   console.log(val)
 })
 
-props.score = 100
+props.score = 300
 
-// 100
+/* outputs 300 */
+
+``` 
+
+Lets create another JS file, and add the following:
+
+```js
+//file-two.js
+
+/* Pull in PropsAware as PA */
+const PA = require('@develephant/props-aware')
+
+props = PA.props()
+
+props.score = 500
+
+/* fileone.js will output 500 */
 
 ```
 
-### In Classes
+# Gotchas
 
-__Note:__ _Classes can be in seperate files as well._
+Some things to consider before, or when using PropsAware:
+
+  - All properties are stored in a "flat" object. Only root keys trigger update events.
+  - When you set a PA property, it overwrites the existing value for all listeners.
+  - You can store objects with nested values, though you cant trigger on them.
+  - Callbacks are set on the `PropsAware` (`PA`) object directly, not the property itself.
+  - There are no guarentees on delivery order or timing. it will get there though.
+  - To change a property without emitting an update event, use `PA.set(p, v)`.
+  - Dont set the same property in a properties matching callback. Use `PA.set(p, v)`.
+  - Never set properties in the `onAll` callback (see below for workarounds).
+  - Limit yourself to a handful of base `PA` properties, and pass strings for flow control.
+
+
+# API
+
+## `props()`
+
+Retreives the __PropsAware__ property object. All properties on this object emit when set.
 
 ```js
 const PA = require('@develephant/props-aware')
 
-class A {
+let props = PA.props()
+```
+
+## `on(prop, cb)`
+
+__Callback:__
+
+|Name|Purpose|
+|----|-------|
+|`val`|The property value|
+|`prop`|The name of the property|
+
+Listen for a property update.
+
+```js
+const PA = require('@develephant/props-aware')
+
+PA.on('score', (val, prop) => {
+  console.log(val)
+})
+```
+
+
+## `has(prop)`
+
+Checks to see if a specific property is housed in the __PropsAware__ property table.
+
+```js
+const PA = require('@develephant/props-aware')
+
+let has_username = PA.has('username')
+```
+
+## `del(prop)`
+
+Removes a properties update listeners. This destroys __all__ update listeners for the property.
+
+```js
+let success = PA.del('score')
+```
+
+## `onAll(cb)`
+
+__Callback:__
+
+|Name|Purpose|
+|----|-------|
+|`val`|The property value|
+|`prop`|The name of the property|
+
+Your program can opt-in to listening to __all__ property changes. When using this method, you would need to filter the messages you want.
+
+```js
+PA.onAll((val, prop) => {
+  console.log('changed', prop, val)
+})
+```
+
+_Property based flow control:_
+
+```js
+PA.onAll((val, prop) => {
+  if (prop === 'goback') {
+    console.log('go back')
+  } else if (prop === 'goforward') {
+    console.log('go forward')
+  }
+})
+
+//...somewhere else
+
+/* PA Props reference */
+props.goback = true
+//...or
+props.goforward = true
+
+```
+
+_State based flow control (using `on`):_
+
+```js
+PA.on('state', (val) => {
+  if (val === 'goback') {
+    console.log('go back')
+  } else if (val === 'goforward') {
+    console.log('go forward')
+  }
+})
+
+//...somewhere else
+
+/* PA Props reference */
+props.state = 'goback'
+//...or
+props.state = 'goforward'
+
+
+```
+
+## `onDel(cb)`
+
+__Callback:__
+
+|Name|Purpose|
+|----|-------|
+|`prop`|The name of the property|
+
+Fired when the `del` method is used in the __PropsAware__ object
+
+```js
+PA.onDel((prop) => {
+  console.log('del', prop)
+})
+```
+
+## `sync()`
+
+Dispatch all properties, to all listeners. Should not be used often, especially with large property objects.
+
+> _Note:_ Any `onAll` listeners will be called with __all__ emitted properties.
+
+```js
+const PA = require('@develephant/props-aware')
+
+//Set a property "silently"
+PA.set('prop', 'val')
+
+//Nevermind, send everything out
+PA.sync()
+```
+
+# Examples
+
+### In Classes
+
+```js
+//ClassA.js
+
+const PA = require('@develephant/props-aware')
+
+class ClassA {
   constructor() {
     this.props = PA.props()
 
@@ -47,24 +227,41 @@ class A {
     })
   }
 }
+module.exports = ClassA
+```
 
-class B {
+```js
+//ClassB.js
+
+const PA = require('@develephant/props-aware')
+
+class ClassB {
   constructor() {
     this.props = PA.props()
     this.props.score = 100
   }
 }
+module.exports = ClassB
+```
 
-let classA = new A()
+__Run__
 
-let classB = new B() /* Class A will output "100" */
+```js
+//main.js
+
+const ClassA = require('./ClassA')
+const ClassB = require('./ClassB')
+
+const A = new ClassA()
+const B = new ClassB() /* Class A will output "100" */
 ```
 
 ### In Objects
 
-__Note:__ _Objects can be in seperate files as well._
-
 ```js
+//obj-one.js
+
+/* Pull in PropsAware as PA */
 const PA = require('@develephant/parse-aware')
 
 const ObjA = {
@@ -75,16 +272,36 @@ const ObjA = {
     })
   }
 }
+module.exports = ObjA
+```
+
+```js
+//obj-two.js
+
+/* Pull in PropsAware as PA */
+const PA = require('@develephant/props-aware')
 
 const ObjB = {
   props: PA.props()
 }
+module.exports = ObjB
+```
 
-ObjA.listen()
+__Run__
 
-ObjB.props.greeting = 'Hello' /* ObjA will output "Hello" */
+```js
+//main.js
 
-ObjA.props.greeting = 'Hola' /* ObjA will output "Hola" */
+const objA = require('./obj-one')
+const objB = require('./obj-two')
+
+objA.listen()
+
+objA.props.greeting = 'Hola' /* ObjA will output "Hola" */
+
+//Props object is "global" so this works via objB:
+
+objB.props.greeting = 'Hello' /* ObjA will output "Hello" */
 
 ```
 
@@ -113,63 +330,79 @@ classB.props.score = 1000
 
 ```
 
-## API
+# Tips
 
-### `props`
+## Keep it simple
 
-Returns the __PropsAware__ global property table.
+Try to keep the amount of __PropsAware__ properties to a minimum, and instead pass strings, etc. to handle different messaging and state.
+
+Consider the following:
 
 ```js
-let props = PropsAware.props()
+const PA = require('@develephant/props-aware')
+let props = PA.props()
+
+//this is okay...
+props.walking = true
+props.running = false
+
+//but this is better!
+props.pace = 'walking'
+//OR
+props.pace = 'running'
+
 ```
 
-### `on`
+> In most basic programs, you can usually get away with less than 5-6 __PropsAware__ properties.
 
-Attaches a listener to __PropsAware__ for a specific properties updates.
+## Don't set the same property in a property callback.
+
+Because, Stack Overflow...
+
+## Don't set properties in `onAll`.
+
+See previous tip...
+
+### Workarounds
+
+If you really need to set a property in the properties callback, you can either set it silently, without triggering an update, or by setting a super short timeout.
+
+But, in reality this creating an ifinite loop, so you need to make sure you can break out of it.
+
+___The issue:___
 
 ```js
-PropsAware.on(property, (val, prop) => {
-  console.log('updated', prop, val)
+...
+props = PA.props()
+PA.on('score', (val) => {
+  props.score = 300
+  /* Will repeat until stack overflow */
 })
 ```
 
-### `onAll`
-
-Attaches a listener to __PropsAware__ for all property updates.
+___Set a property "silenty":___
 
 ```js
-PropsAware.onAll((val, prop) {
-  console.log('updated', prop, val)
+...
+
+PA.on('score', (val) => {
+  PA.set('score', new_val)
+})
+
+```
+
+If you really, really, want to loop in the callback, you can use this trick:
+
+```js
+...
+
+let props = PA.props()
+PA.on('score', (val) => {
+  setTimeout((val) => { props.score = val }, 1)
+  /* Will loop forever, or until your computer fizzles */
 })
 ```
 
-### `onDel`
-
-Removes a properties update listeners. This destroys __all__ update listeners for the property. 
-
-> The "global" listener `onAll` will still receieve updates. Other listeners need to be reactivated to be used again.
-
-```js
-PropsAware.onDel((prop, val) => {
-  console.log('removed', prop, val)
-})
-```
-
-### `has`
-
-Checks to see if a specific property is housed in the __PropsAware__ property table.
-
-```js
-let has_username = PropsAware.has('username')
-```
-
-### `del`
-
-Removes __all__ update listeners for a specific property.
-
-```js
-let success = PropsAware.del('score')
-```
 
 ^_^
 
