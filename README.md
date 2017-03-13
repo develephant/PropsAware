@@ -412,17 +412,17 @@ props.pace = 'running'
 
 > In most basic programs, you can usually get away with less than 5-6 __PropsAware__ properties.
 
-## Don't set the same PA property in a property callback.
+## Don't set the same `PA` property in a properties callback.
 
 Because, Stack Overflow...
 
 ```js
-//Will NOT work
 let props = PA.props()
+
+//Will NOT work
 PA.on('score', (val) => {
   props.score = 200 //infinite loop!
 })
-
 
 //Will work
 PA.on('score', (val) => {
@@ -431,7 +431,7 @@ PA.on('score', (val) => {
 
 ```
 
-## Don't set PA properties in `onAll`.
+## Don't set `PA` properties in `onAll`.
 
 See previous tip...
 
@@ -450,7 +450,7 @@ PA.onAll((val, prop) => {
 
 ### Workarounds
 
-If you really need to set a PA property in the properties callback, you can either set it silently, without triggering an update, or by setting a super short timeout.
+If you really need to set a `PA` property in the properties callback, you can either set it silently, without triggering an update, or by setting a super short timeout.
 
 But, in reality this creating an infinite loop, so you _should_ have a good reason to do it.
 
