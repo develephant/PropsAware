@@ -1,6 +1,6 @@
 {
   "name": "@develephant/props-aware",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "A \"living\" global properties store for programs. Dispatch with ease.",
   "main": "index.js",
   "scripts": {
