@@ -1,6 +1,6 @@
 # `PropsAware`
 
-### A "living" global properties store, for Node based programs. Dispatch with ease.
+### A "living" global properties store for Node based programs. Dispatch with ease.
 
 ## Install
 

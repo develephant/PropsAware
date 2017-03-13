@@ -1,7 +1,7 @@
 {
   "name": "@develephant/props-aware",
   "version": "0.1.0",
-  "description": "An event based global properties watcher.",
+  "description": "A \"living\" global properties store for programs. Dispatch with ease.",
   "main": "index.js",
   "scripts": {
     "test": "node ./test"
