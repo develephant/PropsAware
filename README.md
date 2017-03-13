@@ -212,7 +212,9 @@ props.pace = 'running'
 
 ```
 
-> In most basic programs, you shouldnt need more than 5-6 __PropsAware__ properties.
+> _In most basic programs, you shouldnt need more than 4-5 __PropsAware__ properties._
+>
+> With the pattern above, its entirely possible to manipulate the bulk of your program with one `PA` property!
 
 # API
 
@@ -228,7 +230,7 @@ let props = PA.props()
 
 ## `on(prop, cb)`
 
-__Callback:__
+__Callback receives:__
 
 |Name|Purpose|
 |----|-------|
@@ -266,14 +268,14 @@ let success = PA.del('score')
 
 ## `onAll(cb)`
 
-__Callback:__
+__Callback receives:__
 
 |Name|Purpose|
 |----|-------|
 |`val`|The property value|
 |`prop`|The name of the property|
 
-Your program can opt-in to listening to __all__ property changes. When using this method, you would need to filter the messages you want.
+Any part of the program can listen for __all__ `PA` property changes. When using this method, you need to filter the messages with control statements.
 
 ```js
 PA.onAll((val, prop) => {
@@ -295,6 +297,7 @@ PA.onAll((val, prop) => {
 //...somewhere else
 
 /* PA Props reference */
+let props = PA.props()
 props.goback = true
 //...or
 props.goforward = true
@@ -315,16 +318,19 @@ PA.on('state', (val) => {
 //...somewhere else
 
 /* PA Props reference */
+let props = PA.props()
 props.state = 'goback'
 //...or
 props.state = 'goforward'
-
-
 ```
+
+> _State based flow control is generally the better choice._ 
+> 
+> With the pattern above, its entirely possible to manipulate the bulk of your program with one `PA` property!
 
 ## `onDel(cb)`
 
-__Callback:__
+__Callback receives:__
 
 |Name|Purpose|
 |----|-------|
