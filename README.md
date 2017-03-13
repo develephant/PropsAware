@@ -16,9 +16,11 @@ const PropsAware = require('@develephant/props-aware')
 
 # Overview
 
-__PropsAware__ (or `PA`) is a "global" property object that emits events when properties are changed.
+__PropsAware__ (or `PA`) is a global property object that emits events when properties are changed.
 
-You can listen for these changes virutally anywhere in your program. In code it looks like this:
+You can listen for these changes virtually anywhere in your program. 
+
+In code it looks like this:
 
 ```js
 //file-one.js
@@ -126,7 +128,7 @@ instance1.props.score = 100
 
 # API
 
-## `props()`
+## `props() -> PropsAware_properties`
 
 Retreives the __PropsAware__ property object. All properties on this object emit when set.
 
@@ -156,9 +158,9 @@ PA.on('score', (val, prop) => {
 ```
 
 
-## `has(prop)`
+## `has(prop) -> success_bool`
 
-Checks to see if a specific property is housed in the __PropsAware__ property table.
+Checks to see if a specific __root__ property is housed in the __PropsAware__ property table.
 
 ```js
 const PA = require('@develephant/props-aware')
@@ -166,7 +168,7 @@ const PA = require('@develephant/props-aware')
 let has_username = PA.has('username')
 ```
 
-## `del(prop)`
+## `del(prop) -> success_bool`
 
 Removes a properties update listeners. This destroys __all__ update listeners for the property, except the global `onAll`.
 
@@ -248,7 +250,7 @@ PA.onDel((prop) => {
 })
 ```
 
-## `sync()`
+## `sync() --> success_bool`
 
 Dispatch all properties, to all listeners. Should not be used often, especially with large property objects.
 
