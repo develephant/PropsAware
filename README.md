@@ -109,7 +109,7 @@ Changing `user.color` directly will not trigger an event. Additionally, in the c
 An easy way to handle this, is pulling the object first:
 
 ```js
-let obj = props.user
+let obj = props.user //by ref
 obj.color = 'yellow'
 props.user = obj //will trigger
 
@@ -121,7 +121,7 @@ Or, if you want to be super fancy...
 ```js
 let obj = Object.assign({}, props.user) //cloned
 obj.color = 'yellow'
-props.user = obj
+props.user = obj //will trigger
 ```
 
 > ___The above holds true for Arrays too.___
