@@ -212,7 +212,7 @@ props.pace = 'running'
 
 ```
 
-> _In most basic programs, you shouldnt need more than 4-5 __PropsAware__ properties._
+> _In most basic programs, you shouldnt need more than 4-5 `PA` properties._
 >
 > With the pattern above, its entirely possible to manipulate the bulk of your program with one `PA` property!
 
