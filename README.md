@@ -16,9 +16,11 @@ const PropsAware = require('@develephant/props-aware')
 
 # Overview
 
-__PropsAware__ (or `PA`) is a global property object that emits events when properties are changed.
+__PropsAware__ (or `PA`) is a global property object that emits events on property changes.
 
 You can listen for these changes virtually anywhere in your program. 
+
+_Events are only emitted when the underlying property data changes._
 
 In code it looks like this:
 
@@ -50,26 +52,26 @@ const PA = require('@develephant/props-aware')
 
 props = PA.props()
 
-props.score = 500
+props.score = 500 //will trigger an update
 
 /* fileone.js will output 500 */
 
+props.score = 500 //will not trigger an update, same data
+
 ```
 
-# Gotchas
+# Discussion
 
 Some things to consider before, or when using __PropsAware__:
 
-  - All properties are stored in a "flat" object. Only root keys trigger update events. [1]
-  - When you set a PA property, it overwrites the existing value for all listeners.
-  - You can store objects with nested values, but you cant trigger on inner keys.
+  - Only properties are managed; strings, numbers, booleans, arrays, and "data" objects.
+  - Properties are stored as a flat tree. Only root keys trigger update events. [1]
+  - When you set a `PA` property, its immediately available to all listeners.
   - Callbacks are set on the `PropsAware` (`PA`) object directly, _not_ the property itself. [2]
   - To change a property without emitting an update event, use `PA.set(p, v)`.
-  - Dont set the same property in a properties matching callback. Use `PA.set(p, v)`.
-  - Never set properties in the `onAll` callback (see below for workarounds).
-  - Limit yourself to a handful of base `PA` properties, and pass strings for flow control.
-  - There are no guarentees on delivery order or timing. it will get there though.
-  - When creating object instances with PA properties, each instance will have a listener attached. [3]
+  - Limit yourself to a handful of base `PA` properties, and pass primitives for flow control.
+  - There are no guarantees on delivery order or timing. it will get there though.
+  - When creating object instances with `PA` properties, each instance will have its own listener. [3]
 
 ### Footnotes
 
@@ -78,14 +80,42 @@ Some things to consider before, or when using __PropsAware__:
 ```js
 //example PA props object
 ...
-{
-  score: 200 //Will emit
-  user: { //Will emit
-    name: 'User', //Will NOT emit
-    color: 'green' //Will NOT emit
+let props = {
+  score: 200
+  user: {
+    name: 'User',
+    color: 'green'
   }
 }
 ```
+
+In the code above, when the `score` property is updated with a _new_ value, an event will be emitted.
+
+The `user` key holds an object. When the key is set with an updated object, the `user` key will trigger:
+
+```js
+//only root keys emit
+PA.on('user', (val) => {
+  console.log(val.color) //blue
+})
+
+props.user = { color: 'blue' }
+
+```
+
+Changing `user.color` directly will not trigger an event. The objects "shape" must change. Additionally, in the code above, the `name` key will be stripped away. This may be fine if thats whats intended.
+
+An easy way to handle this, is pulling the object first:
+
+```js
+let obj = props.user
+obj.color = 'yellow'
+props.user = obj
+
+//yellow
+```
+
+> ___The above holds true for Arrays too.___
 
 #### 2) Callbacks are set on the `PA` object, _not_ the property:
 
@@ -412,45 +442,9 @@ props.pace = 'running'
 
 > In most basic programs, you can usually get away with less than 5-6 __PropsAware__ properties.
 
-## Don't set the same `PA` property in a properties callback.
+### Notes
 
-Because, Stack Overflow...
-
-```js
-let props = PA.props()
-
-//Will NOT work
-PA.on('score', (val) => {
-  props.score = 200 //infinite loop!
-})
-
-//Will work
-PA.on('score', (val) => {
-  props.someotherprop = 'winning'
-})
-
-```
-
-## Don't set _any_ `PA` properties in `onAll`.
-
-See previous tip...
-
-```js
-let someprop
-let props = PA.props()
-
-PA.onAll((val, prop) => {
-  //if props.prop === prop 
-  props.prop = someval //infinite loop!
-  //non PA property
-  someprop = someval //this is fine
-})
-
-```
-
-### Workarounds
-
-If you really need to set a `PA` property in the properties callback, you can either set it silently, without triggering an update, or by setting a super short timeout.
+If you need to set a `PA` property in the properties callback, you can either set it silently, without triggering an update, or by setting a super short timeout.
 
 But, in reality this creating an infinite loop, so you _should_ have a good reason to do it.
 
