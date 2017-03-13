@@ -116,6 +116,14 @@ props.user = obj //will trigger
 //yellow
 ```
 
+Or, if you want to be super fancy...
+
+```js
+let obj = Object.assign({}, props.user)
+obj.color = 'yellow'
+props.user = obj
+```
+
 > ___The above holds true for Arrays too.___
 
 #### 2) Callbacks are set on the `PA` object, _not_ the property:
