@@ -1,6 +1,6 @@
 __PropsAware__
 
-_An event based global properties watcher._
+_Event based global properties watcher._
 
 &copy; 2017 develephant
 
