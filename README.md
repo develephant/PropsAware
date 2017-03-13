@@ -104,7 +104,7 @@ props.user = { color: 'blue' }
 
 ```
 
-Changing `user.color` directly will not trigger an event. The objects "shape" must change. Additionally, in the code above, the `name` key will be stripped away. This may be fine if thats whats intended.
+Changing `user.color` directly will not trigger an event. Additionally, in the code above, the `name` key will be stripped away. This may be fine if thats whats intended.
 
 An easy way to handle this, is pulling the object first:
 
@@ -122,12 +122,12 @@ props.user = obj //will trigger
 
 ```js
 ...
-//Works!
+//works!
 PA.on('score', (val) => {
   console.log(val)
 })
 
-//Does NOT work
+//does NOT work
 score.on((val) => {
   console.log(val)
 }
@@ -160,15 +160,14 @@ instance1.props.score = 100
 #### 4) Dont set properties in an `onAll` handler:
 
 ```js
-//infinite loop
 let props = PA.props()
-PA.onAll((val, prop) => {
+PA.onAll((val, prop) => { //infinite loop
   props[prop] = val //dont do it!
   props.dontsetme = 'oops' //think of the puppies!!
 })
 ```
 
-If you _really, really_ need to set a `PA` property in an `onAll` handler you can either:
+If you _really, really_ need/want to set a `PA` property in an `onAll` handler you can either:
 
 ___Set it silently, without triggering an update___
 
@@ -213,8 +212,6 @@ props.pace = 'running'
 ```
 
 > _In most basic programs, you shouldnt need more than 4-5 `PA` properties._
->
-> With the pattern above, its entirely possible to manipulate the bulk of your program with one `PA` property!
 
 # API
 
@@ -299,7 +296,7 @@ PA.onAll((val, prop) => {
 /* PA Props reference */
 let props = PA.props()
 props.goback = true
-//...or
+//or
 props.goforward = true
 
 ```
