@@ -69,7 +69,7 @@ Some things to consider before, or when using __PropsAware__:
   - Never set properties in the `onAll` callback (see below for workarounds).
   - Limit yourself to a handful of base `PA` properties, and pass strings for flow control.
   - There are no guarentees on delivery order or timing. it will get there though.
-  - When creating object instance with PA properties, each instance will have a listener attached. [3]
+  - When creating object instances with PA properties, each instance will have a listener attached. [3]
 
 ### Footnotes
 
