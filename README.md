@@ -90,7 +90,7 @@ let props = {
 }
 ```
 
-In the code above, when the `score` property is updated with a _new_ value, an event will be emitted.
+In the object above, when the `score` property is updated with a _new_ value, an event will be emitted.
 
 The `user` key holds an object. When the key is set with an updated object, the `user` key will trigger:
 
@@ -111,7 +111,7 @@ An easy way to handle this, is pulling the object first:
 ```js
 let obj = props.user
 obj.color = 'yellow'
-props.user = obj
+props.user = obj //will trigger
 
 //yellow
 ```
