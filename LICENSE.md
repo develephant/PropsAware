@@ -1,4 +1,4 @@
-__props-aware__
+__PropsAware__
 
 _An event based global properties watcher._
 

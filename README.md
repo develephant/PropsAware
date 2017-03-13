@@ -1,6 +1,6 @@
 # `PropsAware`
 
-### A "living" global properties store, for NodeJS programs. Dispatch throughout your programs with ease.
+### A "living" global properties store, for Node based programs. Dispatch throughout your programs with ease.
 
 ## Install
 
@@ -58,16 +58,69 @@ props.score = 500
 
 Some things to consider before, or when using PropsAware:
 
-  - All properties are stored in a "flat" object. Only root keys trigger update events.
+  - All properties are stored in a "flat" object. Only root keys trigger update events. [1]
   - When you set a PA property, it overwrites the existing value for all listeners.
-  - You can store objects with nested values, though you cant trigger on them.
-  - Callbacks are set on the `PropsAware` (`PA`) object directly, not the property itself.
-  - There are no guarentees on delivery order or timing. it will get there though.
+  - You can store objects with nested values, but you cant trigger on inner keys.
+  - Callbacks are set on the `PropsAware` (`PA`) object directly, _not_ the property itself. [2]
   - To change a property without emitting an update event, use `PA.set(p, v)`.
   - Dont set the same property in a properties matching callback. Use `PA.set(p, v)`.
   - Never set properties in the `onAll` callback (see below for workarounds).
   - Limit yourself to a handful of base `PA` properties, and pass strings for flow control.
+  - There are no guarentees on delivery order or timing. it will get there though.
+  - When creating object instance with PA properties, each instance will have a listener attached. [3]
 
+### Footnotes
+
+#### 1) Only root keys trigger an update:
+
+```js
+//example PA props object
+...
+{
+  score: 200 //Will emit
+  user: { //Will emit
+    name: 'User', //Will NOT emit
+    color: 'green' //Will NOT emit
+  }
+}
+```
+
+#### 2) Callbacks are set on the `PA` object, not the property:
+
+```js
+...
+//Works!
+PA.on('score', (val) => {
+  console.log(val)
+})
+
+//Does NOT work
+score.on('score', ...)
+
+```
+
+#### 3) Created instances of a Class will all emit:
+
+```js
+class MyClass {
+  constructor() {
+    this.props = PA.props()
+    PA.on('score', (val) => {
+      console.log(val)
+    })
+  }
+}
+
+const instance1 = new MyClass()
+const instance2 = new MyClass()
+const instance3 = new MyClass()
+
+instance1.props.score = 100
+
+/* instance1 outputs 100 */
+/* instance2 outputs 100 */
+/* instance3 outputs 100 */
+```
 
 # API
 
