@@ -431,7 +431,7 @@ PA.on('score', (val) => {
 
 ```
 
-## Don't set `PA` properties in `onAll`.
+## Don't set _any_ `PA` properties in `onAll`.
 
 See previous tip...
 
