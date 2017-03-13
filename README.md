@@ -438,11 +438,10 @@ let someprop
 let props = PA.props()
 
 PA.onAll((val, prop) => {
-  //if props.prop ==== prop 
+  //if props.prop === prop 
   props.prop = someval //infinite loop!
-  ...
-  //ok
-  someprop = someval
+  //non PA property
+  someprop = someval //this is fine
 })
 
 ```
