@@ -2,6 +2,8 @@
 
 ### A "living" global properties data store. Dispatch with ease.
 
+<img src="pa.png">
+
 ## Install
 
 ```
