@@ -1,6 +1,6 @@
 # `PropsAware`
 
-### A "living" global properties store, for Node based programs. Dispatch throughout your programs with ease.
+### A "living" global properties store, for Node based programs. Dispatch with ease.
 
 ## Install
 
@@ -56,7 +56,7 @@ props.score = 500
 
 # Gotchas
 
-Some things to consider before, or when using PropsAware:
+Some things to consider before, or when using __PropsAware__:
 
   - All properties are stored in a "flat" object. Only root keys trigger update events. [1]
   - When you set a PA property, it overwrites the existing value for all listeners.
@@ -85,7 +85,7 @@ Some things to consider before, or when using PropsAware:
 }
 ```
 
-#### 2) Callbacks are set on the `PA` object, not the property:
+#### 2) Callbacks are set on the `PA` object, _not_ the property:
 
 ```js
 ...
@@ -95,7 +95,9 @@ PA.on('score', (val) => {
 })
 
 //Does NOT work
-score.on('score', ...)
+score.on((val) => {
+  console.log(val)
+}
 
 ```
 
@@ -166,7 +168,7 @@ let has_username = PA.has('username')
 
 ## `del(prop)`
 
-Removes a properties update listeners. This destroys __all__ update listeners for the property.
+Removes a properties update listeners. This destroys __all__ update listeners for the property, except the global `onAll`.
 
 ```js
 let success = PA.del('score')
@@ -258,7 +260,7 @@ const PA = require('@develephant/props-aware')
 //Set a property "silently"
 PA.set('prop', 'val')
 
-//Nevermind, send everything out
+//Nevermind, resend everything
 PA.sync()
 ```
 
@@ -412,28 +414,56 @@ props.pace = 'running'
 
 Because, Stack Overflow...
 
+```js
+//Will NOT work
+let props = PA.props()
+PA.on('score', (val) => {
+  props.score = 200 //infinite loop!
+})
+
+
+//Will work
+PA.on('score', (val) => {
+  props.someotherprop = 'winning'
+})
+
+```
+
 ## Don't set properties in `onAll`.
 
 See previous tip...
+
+```js
+let someprop
+let props = PA.props()
+
+PA.onAll((val, prop) => {
+  //if props.prop ==== prop //infinite loop!
+  ...
+  //ok
+  someprop = val
+})
+
+```
 
 ### Workarounds
 
 If you really need to set a property in the properties callback, you can either set it silently, without triggering an update, or by setting a super short timeout.
 
-But, in reality this creating an ifinite loop, so you need to make sure you can break out of it.
+But, in reality this creating an infinite loop, so you need to make sure you can break out of it.
 
 ___The issue:___
 
 ```js
 ...
-props = PA.props()
+let props = PA.props()
 PA.on('score', (val) => {
   props.score = 300
   /* Will repeat until stack overflow */
 })
 ```
 
-___Set a property "silenty":___
+___Set a property "silently":___
 
 ```js
 ...
