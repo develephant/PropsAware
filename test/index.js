@@ -48,3 +48,21 @@ b.remove()
 console.log(a1.props.score)
 
 a2.props.score = 300
+
+Obj.props.score = 1200
+Obj.props.score = 555
+Obj.props.score = 555
+Obj.props.score = 2300
+
+b.props.thing = {user: 'jim', color: 'red'}
+b.props.thing = {user: 'jim', color: 'red'}
+b.props.thing = {user: 'jim', color: true}
+
+a2.props.status = false
+a2.props.status = false
+a2.props.status = true
+
+a1.props.arr = [1,2,3]
+a1.props.arr = [1,2,3]
+a1.props.arr = [2,3,4]
+a1.props.arr = [2, 3, 4]

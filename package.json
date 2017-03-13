@@ -28,7 +28,9 @@
     "url": "https://github.com/develephant/PropsAware/issues"
   },
   "homepage": "https://github.com/develephant/PropsAware#readme",
-  "dependencies": {},
+  "dependencies": {
+    "hasha": "^2.2.0"
+  },
   "devDependencies": {
     "@develephant/clog": "^1.0.0"
   }
