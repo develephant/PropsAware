@@ -119,7 +119,7 @@ props.user = obj //will trigger
 Or, if you want to be super fancy...
 
 ```js
-let obj = Object.assign({}, props.user)
+let obj = Object.assign({}, props.user) //cloned
 obj.color = 'yellow'
 props.user = obj
 ```
