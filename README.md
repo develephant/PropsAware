@@ -2,7 +2,7 @@
 
 ### Properties as dispatchers. A "living" global properties data store.
 
-<img src="pa.png">
+![props-aware](http://develephant.com/projects/pa.png)
 
 ## Install
 
