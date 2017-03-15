@@ -1,1 +1,1 @@
-module.exports = require('./lib/PropAware')
+module.exports = require('./lib/PropsAware')
